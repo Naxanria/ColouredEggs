@@ -71,22 +71,29 @@ public class TileEgg extends TileEntity implements IButtonResponder
     
     this.colour = getColour(r, g, b);
   
-    markDirty();
-  
     sendUpdate();
+    
+    markDirty();
   }
   
   public final void sendUpdate()
   {
-    if (world != null && !world.isRemote)
+    if (world != null  && !world.isRemote)
     {
-      NBTTagCompound compound = new NBTTagCompound();
+      NBTTagCompound compound = new NBTTagCompound(); //getUpdateTag();
       writeSyncableNBT(compound);
   
-      world.markBlockRangeForRenderUpdate(pos, pos);
       IBlockState state = world.getBlockState(pos);
+      world.markBlockRangeForRenderUpdate(pos.add(-1, -1, -1), pos.add(1, 1, 1));
+      world.markChunkDirty(pos, this);
+      
+      world.markAndNotifyBlock(pos, world.getChunkFromBlockCoords(pos), state, state, WorldUtil.FLAG_STATE_UPDATE_BLOCK | WorldUtil.FLAG_STATE_SEND_TO_ALL_CLIENTS | WorldUtil.FLAG_STATE_RERENDER_MAINTHREAD);
+      
+      world.notifyNeighborsOfStateChange(pos.add(1, 0, 0), state.getBlock(), true);
       world.notifyBlockUpdate(pos, state, state, WorldUtil.FLAG_STATE_UPDATE_BLOCK | WorldUtil.FLAG_STATE_SEND_TO_ALL_CLIENTS | WorldUtil.FLAG_STATE_RERENDER_MAINTHREAD);
-      world.scheduleBlockUpdate(pos, state.getBlock(), 0, 0);
+      world.scheduleBlockUpdate(pos, state.getBlock(), 100, 0);
+      
+      state.getBlock().onNeighborChange(world, pos, pos.add(0, 1, 0));
       
       PacketHelper.updateAround(this, compound);
     }
@@ -129,8 +136,10 @@ public class TileEgg extends TileEntity implements IButtonResponder
   @Override
   public NBTTagCompound getUpdateTag()
   {
-    NBTTagCompound compound = new NBTTagCompound();
+    NBTTagCompound compound = super.getUpdateTag();
     writeSyncableNBT(compound);
+    
+    
     
     return compound;
   }
