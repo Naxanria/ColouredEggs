@@ -24,12 +24,8 @@ public class ModGuiHandler implements IGuiHandler
     {
       TileEntity tile = world.getTileEntity(new BlockPos(x, y, z));
       
-      ColouredEggs.logger.info("Egg container");
-      
       if (tile instanceof TileEgg)
       {
-        ColouredEggs.logger.info("TileEgg!");
-        
         return new ContainerEgg((TileEgg) tile, player);
       }
     }

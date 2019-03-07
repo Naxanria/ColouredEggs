@@ -3,15 +3,10 @@ package com.naxanria.colouredeggs.block;
 import com.naxanria.colouredeggs.ColouredEggs;
 import com.naxanria.colouredeggs.Init;
 import com.naxanria.colouredeggs.gui.ModGuiHandler;
-import com.naxanria.colouredeggs.model.ItemColourEgg;
 import com.naxanria.colouredeggs.tile.TileEgg;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.color.IBlockColor;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -21,20 +16,11 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class BlockEgg extends Block implements IBlockColor
+public class BlockEgg extends BlockTileBase<TileEgg>
 {
-  public final String name;
-  
-  public BlockEgg()
+  public BlockEgg(String name)
   {
-    super(Material.DRAGON_EGG);
-    
-    name = "block_egg";
-    
-    setRegistryName(ColouredEggs.MODID, name);
-    setUnlocalizedName(ColouredEggs.MODID + name);
-    
-    setCreativeTab(CreativeTabs.DECORATIONS);
+    super(Material.DRAGON_EGG, name);
   }
   
   @Override
@@ -61,14 +47,9 @@ public class BlockEgg extends Block implements IBlockColor
   
   @Nullable
   @Override
-  public TileEntity createTileEntity(World world, IBlockState state)
+  public TileEgg createTileEntity(World world, IBlockState state)
   {
     return new TileEgg();
-  }
-  
-  public String getTileEntityRenderClass()
-  {
-    return null;
   }
   
   @Override
@@ -85,26 +66,6 @@ public class BlockEgg extends Block implements IBlockColor
     }
     
     return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
-  }
-  
-  @Override
-  public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
-  {
-//    return ItemColourEgg.INSTANCE.colorMultiplier(null, 0);
-
-    TileEgg egg = getTileEntity(worldIn, pos);
-
-    if (egg != null)
-    {
-      return egg.getColour();
-    }
-    
-    if (worldIn != null && worldIn instanceof World)
-    {
-      ((World)worldIn).scheduleBlockUpdate(pos, state.getBlock(), 10, 0);
-    }
-    
-    return 0xFF323232;
   }
   
   @Override

@@ -8,7 +8,7 @@ public abstract class CommonProxy
 {
   public abstract void registerItemRender(Item item, int meta, String name);
   
-  public abstract void registerTileEntityRenderer(Class<TileEntity> tileEntityClass, String tileEntityRenderer);
+  public abstract void registerTileEntityRenderer(Class<? extends TileEntity> tileEntityClass, String tileEntityRenderer);
   
   public abstract void registerColours();
 }

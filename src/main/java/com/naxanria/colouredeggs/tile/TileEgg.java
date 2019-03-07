@@ -1,24 +1,23 @@
 package com.naxanria.colouredeggs.tile;
 
-import com.naxanria.colouredeggs.ColouredEggs;
 import com.naxanria.colouredeggs.gui.Button;
 import com.naxanria.colouredeggs.gui.IButtonResponder;
 import com.naxanria.colouredeggs.model.ItemColourEgg;
 import com.naxanria.colouredeggs.network.PacketHelper;
 import com.naxanria.colouredeggs.util.WorldUtil;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.MathHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEgg extends TileEntity implements IButtonResponder
+public class TileEgg extends TileEntityBase implements IButtonResponder
 {
   public static final int RED = 0;
   public static final int GREEN = 1;
@@ -28,24 +27,50 @@ public class TileEgg extends TileEntity implements IButtonResponder
  
   
   private int colour;
-  
+
   public TileEgg()
   {
+    createButtons();
+    init(0);
+  }
+  
+  private void init(int layers)
+  {
     colour = ItemColourEgg.INSTANCE.colorMultiplier(null, 0);
-    
-    markDirty();
-    sendUpdate();
-    
+  }
+  
+  private void createButtons()
+  {
     int id = 0;
   
-    buttons.add(new Button(id++, () -> increase(10, RED)));
-    buttons.add(new Button(id++, () -> increase(-10, RED)));
+    buttons.add(new Button(id++, () -> increase(getAmount(), RED)));
+    buttons.add(new Button(id++, () -> increase(-getAmount(), RED)));
   
-    buttons.add(new Button(id++, () -> increase(10, GREEN)));
-    buttons.add(new Button(id++, () -> increase(-10, GREEN)));
+    buttons.add(new Button(id++, () -> increase(getAmount(), GREEN)));
+    buttons.add(new Button(id++, () -> increase(-getAmount(), GREEN)));
   
-    buttons.add(new Button(id++, () -> increase(10, BLUE)));
-    buttons.add(new Button(id++, () -> increase(-10, BLUE)));
+    buttons.add(new Button(id++, () -> increase(getAmount(), BLUE)));
+    buttons.add(new Button(id++, () -> increase(-getAmount(), BLUE)));
+  }
+  
+  private int getAmount()
+  {
+    if (GuiScreen.isShiftKeyDown())
+    {
+      return 50;
+    }
+    
+    if (GuiScreen.isCtrlKeyDown())
+    {
+      return 1;
+    }
+    
+    if (GuiScreen.isAltKeyDown())
+    {
+      return 255;
+    }
+    
+    return 10;
   }
   
   private void increase(int amount, int colour)

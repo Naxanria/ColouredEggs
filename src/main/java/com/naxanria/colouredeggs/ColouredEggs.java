@@ -58,6 +58,8 @@ public class ColouredEggs
   {
     logger.info("Registering colour handlers.");
     proxy.registerColours();
+    
+    
   }
   
   @Mod.EventBusSubscriber
@@ -67,21 +69,31 @@ public class ColouredEggs
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
       logger.info("Registering items");
-      event.getRegistry().register(Init.Items.CONFIGURATOR);
-      event.getRegistry().register(new ItemBlock(Init.Blocks.EGG).setRegistryName(Init.Blocks.EGG.getRegistryName()));
+  
+      Init.init();
+      
+      Init.registerItems(event.getRegistry());
+      
+//      event.getRegistry().register(Init.Items.CONFIGURATOR);
+//      event.getRegistry().register(new ItemBlock(Init.Blocks.EGG).setRegistryName(Init.Blocks.EGG.getRegistryName()));
     }
     
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event)
     {
       logger.info("Registering blocks");
-      event.getRegistry().register(Init.Blocks.EGG);
-      GameRegistry.registerTileEntity(Init.Blocks.EGG.getTileEntityClass(), Init.Blocks.EGG.getRegistryName());
-      String tileEntityRenderClass = Init.Blocks.EGG.getTileEntityRenderClass();
-      if (tileEntityRenderClass != null)
-      {
-        proxy.registerTileEntityRenderer(Init.Blocks.EGG.getTileEntityClass(), tileEntityRenderClass);
-      }
+  
+      Init.init();
+      
+      Init.registerBlocks(event.getRegistry());
+      
+//      event.getRegistry().register(Init.Blocks.EGG);
+//      GameRegistry.registerTileEntity(Init.Blocks.EGG.getTileEntityClass(), Init.Blocks.EGG.getRegistryName());
+//      String tileEntityRenderClass = Init.Blocks.EGG.getTileEntityRenderClass();
+//      if (tileEntityRenderClass != null)
+//      {
+//        proxy.registerTileEntityRenderer(Init.Blocks.EGG.getTileEntityClass(), tileEntityRenderClass);
+//      }
       
       
     }
@@ -89,8 +101,13 @@ public class ColouredEggs
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event)
     {
-      proxy.registerItemRender(Item.getItemFromBlock(Init.Blocks.EGG), 0, Init.Blocks.EGG.name);
-      proxy.registerItemRender(Init.Items.CONFIGURATOR, 0, Init.Items.CONFIGURATOR.name);
+      logger.info("Registering models");
+  
+      Init.init();
+      
+      Init.registerModels();
+//      proxy.registerItemRender(Item.getItemFromBlock(Init.Blocks.EGG), 0, Init.Blocks.EGG.name);
+//      proxy.registerItemRender(Init.Items.CONFIGURATOR, 0, Init.Items.CONFIGURATOR.name);
     }
   }
   

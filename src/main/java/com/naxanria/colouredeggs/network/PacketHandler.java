@@ -33,17 +33,11 @@ public class PacketHandler
       @Override
       public void handleData(NBTTagCompound compound, MessageContext context)
       {
-        
-        
         World world = Minecraft.getMinecraft().world;
-        
-        ColouredEggs.logger.info("Update?");
       
         if (world != null)
         {
           TileEntity tileEntity = world.getTileEntity(NBTHelper.readBlockPos(compound));
-  
-          ColouredEggs.logger.info("Tile updated " + tileEntity.getPos().getX() + "," + tileEntity.getPos().getY() + "," + tileEntity.getPos().getX());
           
           if (tileEntity instanceof TileEgg)
           {

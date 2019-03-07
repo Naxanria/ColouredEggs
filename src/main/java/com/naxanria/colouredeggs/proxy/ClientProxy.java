@@ -22,7 +22,7 @@ public class ClientProxy extends CommonProxy
   }
   
   @Override
-  public void registerTileEntityRenderer(Class<TileEntity> tileEntityClass, String tileEntityRenderer)
+  public void registerTileEntityRenderer(Class<? extends TileEntity> tileEntityClass, String tileEntityRenderer)
   {
     try
     {
@@ -41,10 +41,7 @@ public class ClientProxy extends CommonProxy
   @Override
   public void registerColours()
   {
-    Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(Init.Blocks.EGG, Init.Blocks.EGG);
-    
-    Minecraft.getMinecraft().getItemColors()
-      .registerItemColorHandler(ItemColourEgg.INSTANCE, Init.Blocks.EGG);
+    Init.registerColours();
   }
   
 }

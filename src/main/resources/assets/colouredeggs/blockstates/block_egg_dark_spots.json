@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "all": "colouredeggs:dark_spots"
+    }
+  },
+  "variants": {
+    "normal": {
+      "model": "colouredeggs:block_egg",
+      "textures": {
+        "all": "colouredeggs:dark_spots"
+      }
+    },
+    "inventory": {
+      "model": "colouredeggs:block_egg"
+    }
+  }
+}

@@ -10,7 +10,7 @@ public class ServerProxy extends CommonProxy
   { }
   
   @Override
-  public void registerTileEntityRenderer(Class<TileEntity> tileEntityClass, String tileEntityRenderer)
+  public void registerTileEntityRenderer(Class<? extends TileEntity> tileEntityClass, String tileEntityRenderer)
   { }
   
   @Override

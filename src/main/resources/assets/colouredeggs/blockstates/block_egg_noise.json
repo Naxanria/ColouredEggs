@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "all": "colouredeggs:noise"
+    }
+  },
+  "variants": {
+    "normal": {
+      "model": "colouredeggs:block_egg",
+      "textures": {
+        "all": "colouredeggs:noise"
+      }
+    },
+    "inventory": {
+      "model": "colouredeggs:block_egg"
+    }
+  }
+}
