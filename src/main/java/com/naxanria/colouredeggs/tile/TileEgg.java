@@ -1,21 +1,19 @@
 package com.naxanria.colouredeggs.tile;
 
-import com.naxanria.colouredeggs.ColouredEggs;
 import com.naxanria.colouredeggs.gui.Button;
 import com.naxanria.colouredeggs.gui.IButtonResponder;
 import com.naxanria.colouredeggs.model.ItemColourEgg;
 import com.naxanria.colouredeggs.network.PacketHelper;
+import com.naxanria.colouredeggs.util.ColourHelper;
 import com.naxanria.colouredeggs.util.WorldUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.chunk.Chunk;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -23,41 +21,24 @@ import java.util.List;
 
 public class TileEgg extends TileEntityBase implements IButtonResponder
 {
-  public static final int RED = 0;
-  public static final int GREEN = 1;
-  public static final int BLUE = 2;
-  
   public List<Button> buttons = new ArrayList<>();
  
-  
   private int colour;
 
   public TileEgg()
   {
-    createButtons();
-    init(0);
-  }
-  
-  private void init(int layers)
-  {
     colour = ItemColourEgg.INSTANCE.colorMultiplier(null, 0);
-  }
-  
-  private void createButtons()
-  {
+    
     int id = 0;
-  
-    buttons.add(new Button(id++, () -> increase(getAmount(), RED)));
-    buttons.add(new Button(id++, () -> increase(-getAmount(), RED)));
-  
-    buttons.add(new Button(id++, () -> increase(getAmount(), GREEN)));
-    buttons.add(new Button(id++, () -> increase(-getAmount(), GREEN)));
-  
-    buttons.add(new Button(id++, () -> increase(getAmount(), BLUE)));
-    buttons.add(new Button(id++, () -> increase(-getAmount(), BLUE)));
+    buttons.add(new Button(id++, ()-> increase(getAmount(), ColourHelper.ColourChannel.RED)));
+    buttons.add(new Button(id++, ()-> increase(-getAmount(), ColourHelper.ColourChannel.RED)));
+    buttons.add(new Button(id++, ()-> increase(getAmount(), ColourHelper.ColourChannel.GREEN)));
+    buttons.add(new Button(id++, ()-> increase(-getAmount(), ColourHelper.ColourChannel.GREEN)));
+    buttons.add(new Button(id++, ()-> increase(getAmount(), ColourHelper.ColourChannel.BLUE)));
+    buttons.add(new Button(id++, ()-> increase(-getAmount(), ColourHelper.ColourChannel.BLUE)));
   }
   
-  private int getAmount()
+  public int getAmount()
   {
     if (GuiScreen.isShiftKeyDown())
     {
@@ -77,52 +58,45 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
     return 10;
   }
   
-  private void increase(int amount, int colour)
+  public void increase(int amount, ColourHelper.ColourChannel channel)
   {
-    int r = getRed();
-    int g = getGreen();
-    int b = getBlue();
+//    ColouredEggs.logger.info("changing " + channel.name() + " by " + amount);
     
-    int currCol = this.colour;
+    int r = ColourHelper.getRed(colour);
+    int g = ColourHelper.getGreen(colour);
+    int b = ColourHelper.getBlue(colour);
     
-    switch (colour)
+    int oldCol = colour;
+    
+    switch (channel)
     {
       case RED:
         r = MathHelper.clamp(r + amount, 0, 255);
         break;
-  
+      
       case GREEN:
         g = MathHelper.clamp(g + amount, 0, 255);
         break;
-  
+      
       case BLUE:
         b = MathHelper.clamp(b + amount, 0, 255);
         break;
     }
     
-    this.colour = getColour(r, g, b);
-  
-    if (!world.isRemote && currCol != colour)
+    this.colour = ColourHelper.getColour(r, g, b);
+    
+    if (!world.isRemote && colour != oldCol)
     {
       sendUpdate();
-  
       markDirty();
-  
-  
-      Chunk chunk = world.getChunkFromBlockCoords(pos);
-  
-      chunk.setModified(true);
-      chunk.markDirty();
     }
-  
-    
   }
   
   public final void sendUpdate()
   {
     if (world != null  && !world.isRemote)
     {
-      NBTTagCompound compound = new NBTTagCompound(); //getUpdateTag();
+      NBTTagCompound compound = new NBTTagCompound();
       writeSyncableNBT(compound);
   
       IBlockState state = world.getBlockState(pos);
@@ -132,7 +106,6 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
       
       PacketHelper.updateAround(this, compound);
     }
-    
   }
   
   @Override
@@ -231,17 +204,17 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
   
   public int getRed()
   {
-    return (colour >> 16) & 0xFF;
+    return ColourHelper.getRed(colour);
   }
   
   public int getGreen()
   {
-    return (colour >> 8) & 0xFF;
+    return ColourHelper.getGreen(colour);
   }
   
   public int getBlue()
   {
-    return colour & 0xFF;
+    return ColourHelper.getBlue(colour);
   }
   
   public int getColour()
@@ -249,13 +222,15 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
     return colour;
   }
   
-  public static int getColour(int r, int g, int b)
-  {
-    return (255 << 24) | (r << 16) | (g << 8) | b;
-  }
-  
   public void setColour(int colour)
   {
+    int prev = this.colour;
     this.colour = colour;
+    
+    if (this.colour != prev)
+    {
+      markDirty();
+      sendUpdate();
+    }
   }
 }

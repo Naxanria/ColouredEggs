@@ -1,19 +1,27 @@
 package com.naxanria.colouredeggs.gui;
 
+import com.naxanria.colouredeggs.ColouredEggs;
 import com.naxanria.colouredeggs.container.ContainerEgg;
 import com.naxanria.colouredeggs.network.PacketHelper;
 import com.naxanria.colouredeggs.tile.TileEgg;
+import com.naxanria.colouredeggs.util.ColourHelper;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.Arrays;
+
+import com.naxanria.colouredeggs.util.ColourHelper.ColourChannel;
+//import static com.naxanria.colouredeggs.util.ColourHelper.getColour;
 
 public class GuiColouredEgg extends GuiContainer
 {
   private final ContainerEgg container;
   
   private GuiButton[] buttons = new GuiButton[6];
-  
+//  private GuiButton resetButton, confirmButton;
+ 
   public GuiColouredEgg(ContainerEgg container)
   {
     super(container);
@@ -30,7 +38,14 @@ public class GuiColouredEgg extends GuiContainer
   
     buttons[i] = new GuiButtonUp(i++, 10, 20);
     buttons[i] = new GuiButtonDown(i++, 10, 40);
+    
+//    resetButton = new GuiButton(i++, 10, 10, "Reset");
+//    confirmButton = new GuiButton(i++, 100, 10, "Confirm");
+    
+//    startColour = colour = container.tile.getColour();
+//    updateRGB();
   }
+  
   
   @Override
   public void initGui()
@@ -38,6 +53,8 @@ public class GuiColouredEgg extends GuiContainer
     super.initGui();
     
     buttonList.addAll(Arrays.asList(buttons));
+//    buttonList.add(resetButton);
+//    buttonList.add(confirmButton);
   }
   
   @Override
@@ -73,8 +90,27 @@ public class GuiColouredEgg extends GuiContainer
       buttons[i + 1].y = ypos;
       buttons[i + 1].drawButton(mc, mouseX, mouseY, partialTicks);
     }
+  
+    int rx = guiLeft + border;
+    int ry = guiTop + ySize - border - 90;
+    int rh = 40;
+    int rw = xSize - border * 2;
 
-    drawRect(guiLeft + border, guiTop + ySize - border - 90, guiLeft + xSize - border, guiTop + ySize - border - 50, container.tile.getColour());
+    drawRect(rx, ry, rx + rw, ry + rh, container.tile.getColour());
+    
+//    int buttonY = guiTop + ySize - border - confirmButton.height;
+//
+//    confirmButton.width = 60;
+//    confirmButton.x = guiLeft + border + 10;
+//    confirmButton.y = buttonY;
+//
+//    confirmButton.drawButton(mc, mouseX, mouseY, partialTicks);
+//
+//    resetButton.width = 60;
+//    resetButton.x = guiLeft + xSize - border - resetButton.width - 10;
+//    resetButton.y = buttonY;
+//
+//    resetButton.drawButton(mc, mouseX, mouseY, partialTicks);
   
     drawString(fontRenderer, "CTRL: +/- 1, ", guiLeft + border + 2, guiTop + ySize - border - 48, 0xFFFFFFFF);
     drawString(fontRenderer, "Shift: +/- 50", guiLeft + border + 2, guiTop + ySize - border - 38, 0xFFFFFFFF);
@@ -84,6 +120,8 @@ public class GuiColouredEgg extends GuiContainer
   @Override
   protected void actionPerformed(GuiButton button)
   {
+//    ColouredEggs.logger.info("Button pressed: " + button + " " + button.id);
+    
     PacketHelper.sendButtonPacket(container.tile, button.id);
   }
 }

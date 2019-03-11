@@ -1,6 +1,7 @@
 package com.naxanria.colouredeggs.model;
 
 import com.naxanria.colouredeggs.tile.TileEgg;
+import com.naxanria.colouredeggs.util.ColourHelper;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
@@ -58,6 +59,6 @@ public class ItemColourEgg implements IItemColor
       }
     }
     
-    return TileEgg.getColour(r, g, b);
+    return ColourHelper.getColour(r, g, b);
   }
 }

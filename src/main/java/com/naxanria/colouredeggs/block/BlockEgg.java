@@ -7,9 +7,11 @@ import com.naxanria.colouredeggs.tile.TileEgg;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -72,5 +74,11 @@ public class BlockEgg extends BlockTileBase<TileEgg>
   public BlockRenderLayer getBlockLayer()
   {
     return super.getBlockLayer();
+  }
+  
+  @Override
+  public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
+  {
+    return Blocks.DRAGON_EGG.getBoundingBox(state, source, pos);
   }
 }

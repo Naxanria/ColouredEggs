@@ -11,6 +11,7 @@ public class ContainerEgg extends Container
   public final EntityPlayer player;
   
   public int colour;
+  public int prevColour;
   
   public ContainerEgg(TileEgg egg, EntityPlayer player)
   {
@@ -18,6 +19,7 @@ public class ContainerEgg extends Container
     this.player = player;
     
     colour = egg.getColour();
+    prevColour = colour;
   }
   
   @Override
@@ -37,8 +39,6 @@ public class ContainerEgg extends Container
         listener.sendWindowProperty(this, 0, tile.getColour());
       }
     }
-    
-//    super.detectAndSendChanges();
   }
   
   @Override
