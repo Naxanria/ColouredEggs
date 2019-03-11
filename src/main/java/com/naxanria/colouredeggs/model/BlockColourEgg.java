@@ -1,5 +1,6 @@
 package com.naxanria.colouredeggs.model;
 
+import com.naxanria.colouredeggs.ColouredEggs;
 import com.naxanria.colouredeggs.block.BlockTileBase;
 import com.naxanria.colouredeggs.tile.TileEgg;
 import net.minecraft.block.state.IBlockState;
@@ -21,13 +22,14 @@ public class BlockColourEgg implements IBlockColor
     
     if (egg != null)
     {
+//      ColouredEggs.logger.info("== colour request: " + pos + " [" + egg.getRed() + "," + egg.getGreen() + "," + egg.getBlue() + "] ==");
       return egg.getColour();
     }
-    
-    if (worldIn != null && worldIn instanceof World)
-    {
-      ((World)worldIn).scheduleBlockUpdate(pos, state.getBlock(), 10, 0);
-    }
+//
+//    if (worldIn != null && worldIn instanceof World)
+//    {
+//      ((World)worldIn).scheduleBlockUpdate(pos, state.getBlock(), 10, 0);
+//    }
     
     return 0xFF323232;
   }

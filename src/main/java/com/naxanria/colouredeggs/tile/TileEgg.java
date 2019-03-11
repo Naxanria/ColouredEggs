@@ -1,17 +1,21 @@
 package com.naxanria.colouredeggs.tile;
 
+import com.naxanria.colouredeggs.ColouredEggs;
 import com.naxanria.colouredeggs.gui.Button;
 import com.naxanria.colouredeggs.gui.IButtonResponder;
 import com.naxanria.colouredeggs.model.ItemColourEgg;
 import com.naxanria.colouredeggs.network.PacketHelper;
 import com.naxanria.colouredeggs.util.WorldUtil;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.chunk.Chunk;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -79,6 +83,8 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
     int g = getGreen();
     int b = getBlue();
     
+    int currCol = this.colour;
+    
     switch (colour)
     {
       case RED:
@@ -96,9 +102,20 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
     
     this.colour = getColour(r, g, b);
   
-    sendUpdate();
+    if (!world.isRemote && currCol != colour)
+    {
+      sendUpdate();
+  
+      markDirty();
+  
+  
+      Chunk chunk = world.getChunkFromBlockCoords(pos);
+  
+      chunk.setModified(true);
+      chunk.markDirty();
+    }
+  
     
-    markDirty();
   }
   
   public final void sendUpdate()
@@ -109,19 +126,13 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
       writeSyncableNBT(compound);
   
       IBlockState state = world.getBlockState(pos);
-      world.markBlockRangeForRenderUpdate(pos.add(-1, -1, -1), pos.add(1, 1, 1));
-      world.markChunkDirty(pos, this);
-      
-      world.markAndNotifyBlock(pos, world.getChunkFromBlockCoords(pos), state, state, WorldUtil.FLAG_STATE_UPDATE_BLOCK | WorldUtil.FLAG_STATE_SEND_TO_ALL_CLIENTS | WorldUtil.FLAG_STATE_RERENDER_MAINTHREAD);
-      
-      world.notifyNeighborsOfStateChange(pos.add(1, 0, 0), state.getBlock(), true);
-      world.notifyBlockUpdate(pos, state, state, WorldUtil.FLAG_STATE_UPDATE_BLOCK | WorldUtil.FLAG_STATE_SEND_TO_ALL_CLIENTS | WorldUtil.FLAG_STATE_RERENDER_MAINTHREAD);
-      world.scheduleBlockUpdate(pos, state.getBlock(), 100, 0);
-      
-      state.getBlock().onNeighborChange(world, pos, pos.add(0, 1, 0));
+
+      world.setBlockState(pos, state, WorldUtil.FLAG_STATE_RERENDER);
+      world.notifyBlockUpdate(pos, state, state, WorldUtil.FLAG_STATE_RERENDER);
       
       PacketHelper.updateAround(this, compound);
     }
+    
   }
   
   @Override
@@ -184,6 +195,20 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
       if (world != null)
       {
         world.markChunkDirty(pos, this);
+        
+        if (world.isRemote)
+        {
+//          ColouredEggs.logger.info("== RERENDER ==");
+          Minecraft mc = Minecraft.getMinecraft();
+//          mc.skipRenderWorld = false;
+//          mc.entityRenderer.updateRenderer();
+//          mc.entityRenderer.updateCameraAndRender(mc.getRenderPartialTicks(), System.nanoTime());
+          
+          // Fixme: This is probably not the correct way! But it works.
+          mc.renderGlobal.loadRenderers();
+          
+//          mc.renderGlobal.updateChunks(System.nanoTime() + 1);
+        }
       }
     }
   }
