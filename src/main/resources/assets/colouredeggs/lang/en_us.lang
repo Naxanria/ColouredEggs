@@ -1,0 +1,20 @@
+#==================#
+# File by Naxanria #
+#==================#
+
+### Items ###
+
+item.colouredeggs.configurator.name=Configurator
+
+### Blocks ###
+
+tile.colouredeggs.block_egg_dark_spots.name=Dark Spots Coloured Egg
+tile.colouredeggs.block_egg_flat.name=Flat Coloured Egg
+tile.colouredeggs.block_egg_noise.name=Noisy Coloured Egg
+tile.colouredeggs.block_egg_standard.name=Spotted Coloured Egg
+tile.colouredeggs.block_egg_stone.name=Stone Coloured Egg
+tile.colouredeggs.block_egg_stripes_hor.name=Horizontal Striped Coloured Egg
+tile.colouredeggs.block_egg_stripes_vert.name=Vertical Striped Coloured Egg
+
+### Tab ###
+itemGroup.colouredeggs=Coloured Eggs
