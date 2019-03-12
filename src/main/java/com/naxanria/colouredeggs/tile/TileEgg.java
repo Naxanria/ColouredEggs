@@ -94,17 +94,12 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
   
   public final void sendUpdate()
   {
-    if (world != null  && !world.isRemote)
+    if (world != null && !world.isRemote)
     {
-      NBTTagCompound compound = new NBTTagCompound();
-      writeSyncableNBT(compound);
-  
       IBlockState state = world.getBlockState(pos);
 
-      world.setBlockState(pos, state, WorldUtil.FLAG_STATE_RERENDER);
-      world.notifyBlockUpdate(pos, state, state, WorldUtil.FLAG_STATE_RERENDER);
-      
-      PacketHelper.updateAround(this, compound);
+      markDirty();
+      world.notifyBlockUpdate(pos, state, state, WorldUtil.FLAG_STATE_SEND_TO_ALL_CLIENTS | WorldUtil.FLAG_STATE_UPDATE_BLOCK);
     }
   }
   
@@ -147,9 +142,7 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
   {
     NBTTagCompound compound = super.getUpdateTag();
     writeSyncableNBT(compound);
-    
-    
-    
+
     return compound;
   }
   
@@ -165,23 +158,12 @@ public class TileEgg extends TileEntityBase implements IButtonResponder
     
     if (colour != oldCol)
     {
-      if (world != null)
+      if (world != null && world.isRemote)
       {
-        world.markChunkDirty(pos, this);
-        
-        if (world.isRemote)
-        {
-//          ColouredEggs.logger.info("== RERENDER ==");
-          Minecraft mc = Minecraft.getMinecraft();
-//          mc.skipRenderWorld = false;
-//          mc.entityRenderer.updateRenderer();
-//          mc.entityRenderer.updateCameraAndRender(mc.getRenderPartialTicks(), System.nanoTime());
-          
-          // Fixme: This is probably not the correct way! But it works.
-          mc.renderGlobal.loadRenderers();
-          
-//          mc.renderGlobal.updateChunks(System.nanoTime() + 1);
-        }
+          IBlockState state = world.getBlockState(pos);
+
+          markDirty();
+          world.notifyBlockUpdate(pos, state, state, WorldUtil.FLAG_STATE_UPDATE_BLOCK);
       }
     }
   }
